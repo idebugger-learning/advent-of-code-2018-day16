@@ -9,6 +9,22 @@ type Instruction = (usize, usize, usize, usize);
 fn main() {
     let opcodes = calculate_opcodes();
     println!("Opcodes: {:?}", opcodes);
+
+    let program_str = include_str!("../data/input.txt");
+    let program = program_str.split("\n")
+        .filter(|line| !line.is_empty())
+        .map(|line| {
+            let instruction = line.split(" ")
+                .map(|value| value.parse::<usize>().unwrap())
+                .collect::<Vec<_>>();
+            (instruction[0], instruction[1], instruction[2], instruction[3])
+        })
+        .collect::<Vec<_>>();
+    let mut cpu = CPU::new();
+    for instruction in program {
+        cpu.do_opcode(opcodes[&instruction.0], instruction.1, instruction.2, instruction.3);
+    }
+    println!("CPU registers after program: {:?}", cpu.registers);
 }
 
 fn calculate_opcodes() -> HashMap<Value, Opcode> {
